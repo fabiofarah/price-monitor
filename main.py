@@ -53,6 +53,7 @@ def run(lojas: set[str] | None = None, sku: int | None = None):
             url = p["url_1001"]
             if not url:
                 continue
+            url = festas_1001.corrigir_url(url, p["descricao"])
             result = festas_1001.get_preco(url)
             registrar_preco(p["id"], "1001festas", url, result.preco, result.disponivel, result.erro)
             if result.erro:
