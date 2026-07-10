@@ -91,6 +91,28 @@ if st.sidebar.button("Sair"):
     st.session_state["autenticado"] = False
     st.rerun()
 
+st.sidebar.divider()
+
+processo_todos: subprocess.Popen | None = st.session_state.get("bot_processo_todos")
+bot_todos_rodando = processo_todos is not None and processo_todos.poll() is None
+
+if bot_todos_rodando:
+    st.sidebar.info("⏳ Atualizando todos os preços…")
+    if st.sidebar.button("↻ Verificar status"):
+        st.rerun()
+else:
+    if processo_todos is not None:
+        if processo_todos.returncode == 0:
+            st.sidebar.success("✅ Todos os preços atualizados!")
+        else:
+            st.sidebar.warning(f"⚠️ Erro ao atualizar (código {processo_todos.returncode}).")
+    if st.sidebar.button("🔄 Atualizar todos os preços"):
+        p = subprocess.Popen([sys.executable, str(SCRIPT_MAIN)])
+        st.session_state["bot_processo_todos"] = p
+        st.rerun()
+
+st.sidebar.divider()
+
 pagina = st.sidebar.radio("", ["Consulta de Preços", "Cadastrar Produto"])
 
 # ---------------------------------------------------------------------------
