@@ -91,32 +91,6 @@ if st.sidebar.button("Sair"):
     st.session_state["autenticado"] = False
     st.rerun()
 
-# ---------------------------------------------------------------------------
-# Botão: Rodar bot
-# ---------------------------------------------------------------------------
-st.sidebar.divider()
-
-processo: subprocess.Popen | None = st.session_state.get("bot_processo")
-bot_rodando = processo is not None and processo.poll() is None
-
-if bot_rodando:
-    st.sidebar.info("⏳ Atualizando preços… aguarde alguns minutos.")
-    if st.sidebar.button("↻ Verificar status"):
-        st.rerun()
-else:
-    if processo is not None:
-        if processo.returncode == 0:
-            st.sidebar.success("✅ Preços atualizados com sucesso!")
-        else:
-            st.sidebar.warning(f"⚠️ Bot finalizou com erro (código {processo.returncode}).")
-
-    if st.sidebar.button("🔄 Atualizar preços agora"):
-        p = subprocess.Popen([sys.executable, str(SCRIPT_MAIN)])
-        st.session_state["bot_processo"] = p
-        st.rerun()
-
-st.sidebar.divider()
-
 pagina = st.sidebar.radio("", ["Consulta de Preços", "Cadastrar Produto"])
 
 # ---------------------------------------------------------------------------
@@ -146,7 +120,8 @@ if pagina == "Consulta de Preços":
 
     label_selecionado = st.selectbox("Produto", opcoes["label"].tolist(), index=0)
 
-    produto_id = int(opcoes.loc[opcoes["label"] == label_selecionado, "id"].iloc[0])
+    produto_id  = int(opcoes.loc[opcoes["label"] == label_selecionado, "id"].iloc[0])
+    produto_sku = int(opcoes.loc[opcoes["label"] == label_selecionado, "sku"].iloc[0])
 
     historico = carregar_historico(produto_id)
 
@@ -201,6 +176,30 @@ if pagina == "Consulta de Preços":
     ultimos = ultimos.rename(columns={"loja": "Loja", "preco": "Preço", "capturado_em": "Coletado em"})
 
     st.dataframe(ultimos[["Loja", "Preço", "Coletado em"]], hide_index=True, use_container_width=True)
+
+    # ---------------------------------------------------------------------------
+    # Botão: Rodar bot de atualização
+    # ---------------------------------------------------------------------------
+    st.divider()
+
+    processo: subprocess.Popen | None = st.session_state.get("bot_processo")
+    bot_rodando = processo is not None and processo.poll() is None
+
+    if bot_rodando:
+        st.info("⏳ Atualizando preços… aguarde alguns minutos.")
+        if st.button("↻ Verificar status"):
+            st.rerun()
+    else:
+        if processo is not None:
+            if processo.returncode == 0:
+                st.success("✅ Preços atualizados com sucesso!")
+            else:
+                st.warning(f"⚠️ Bot finalizou com erro (código {processo.returncode}).")
+
+        if st.button("🔄 Atualizar preço deste produto"):
+            p = subprocess.Popen([sys.executable, str(SCRIPT_MAIN), "--sku", str(produto_sku)])
+            st.session_state["bot_processo"] = p
+            st.rerun()
 
 
 # ---------------------------------------------------------------------------

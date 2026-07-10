@@ -26,14 +26,22 @@ def _precisa_importar() -> bool:
     return len(get_todos_produtos()) == 0
 
 
-def run(lojas: set[str] | None = None):
+def run(lojas: set[str] | None = None, sku: int | None = None):
     init_db()
     if _precisa_importar():
         _log("Banco vazio — importando produtos do Excel...")
         carregar_produtos()
 
     produtos = get_todos_produtos()
-    _log(f"{len(produtos)} produtos carregados.")
+
+    if sku is not None:
+        produtos = [p for p in produtos if p["sku"] == sku]
+        if not produtos:
+            _log(f"SKU {sku} não encontrado no banco.")
+            return
+        _log(f"Atualizando apenas SKU {sku}: {produtos[0].get('descricao', '')}.")
+    else:
+        _log(f"{len(produtos)} produtos carregados.")
 
     # ----------------------------------------------------------------
     # 1001 Festas
@@ -102,9 +110,18 @@ def run(lojas: set[str] | None = None):
 
 if __name__ == "__main__":
     lojas_selecionadas = None
+    sku_selecionado = None
 
     if "--lojas" in sys.argv:
         idx = sys.argv.index("--lojas")
         lojas_selecionadas = set(sys.argv[idx + 1:])
 
-    run(lojas_selecionadas)
+    if "--sku" in sys.argv:
+        idx = sys.argv.index("--sku")
+        try:
+            sku_selecionado = int(sys.argv[idx + 1])
+        except (IndexError, ValueError):
+            _log("Argumento --sku inválido.")
+            sys.exit(1)
+
+    run(lojas_selecionadas, sku=sku_selecionado)
