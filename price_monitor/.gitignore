@@ -1,0 +1,40 @@
+# Banco de dados
+precos.db
+*.db-shm
+*.db-wal
+
+# Exports e relatórios gerados
+relatorios/
+export_*.csv
+export_*.xlsx
+validacao_*.csv
+revisao_*.csv
+
+# Arquivos de debug
+debug_*.html
+debug_*.png
+debug_*.jpg
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+
+# Ambientes virtuais
+venv/
+.venv/
+env/
+
+# Credenciais e configurações locais
+.env
+*.env
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Sessões salvas de scraping
+sessao_*.pkl
+cookies_*.pkl

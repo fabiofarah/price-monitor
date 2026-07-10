@@ -1,0 +1,212 @@
+[
+  {
+    "name": "_GRECAPTCHA",
+    "value": "09AKhCRwialiEhVJJg4hlmnjnZDBwbhS7Z3CRNKRnDCilw36X1BeLJXGisN72VQFkqJxoxmQw-tMRniGHdPEeUevU",
+    "domain": "www.google.com",
+    "path": "/recaptcha",
+    "expires": 1793023254.506866,
+    "httpOnly": true,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "sseroute",
+    "value": "4ce6efd568a2fd57a84d9fd720c54df0|5f326108d5d97b2982120be3fa649449",
+    "domain": "www.novasafra.com.br",
+    "path": "/?(.*)",
+    "expires": -1,
+    "httpOnly": true,
+    "secure": true,
+    "sameSite": "Lax"
+  },
+  {
+    "name": "ccstoreroute",
+    "value": "4c723d8e305266bb5d27fca9553d3849|cc2d3787e8999f4a634b9d592c9e2268",
+    "domain": "www.novasafra.com.br",
+    "path": "/",
+    "expires": -1,
+    "httpOnly": true,
+    "secure": true,
+    "sameSite": "Lax"
+  },
+  {
+    "name": "JSESSIONID",
+    "value": "v_nZismjs5s5O4rIdoMrqd7SVSzahcKkY2pn9Y21H3nu0rPLkd_F!2031514357",
+    "domain": "www.novasafra.com.br",
+    "path": "/",
+    "expires": -1,
+    "httpOnly": true,
+    "secure": true,
+    "sameSite": "Lax"
+  },
+  {
+    "name": "ak_bmsc",
+    "value": "AB4E81EACF1D9DE7B0DF448AD89AFD7C~000000000000000000000000000000~YAAQJfo/F+Z0pNadAQAA58mK2R9gp6Nkapm8awCz2GlszITTzAwvyfwUQ5XwlRdfx5qd4E8IMt+giXz83PtpjFdJrjPsb+V3MOmsUZgZuUIS7+J6oSl6ah52HnR71ZA2f6NaYzxpam+L/yAoDah0/0lQplRT10+F/0r6ATqoIaKoF1CIvrPpqjLS0rygAOXidr2HuTuloxM5dd+gS7FL/PfhNs7A5vpdpgukzpxYtO/wU+R3HxbayGZArnOS9XBXjQqUVafadQ7b6z5Zpa+Qxfo0L3xskFc5LF7zgDCKdTNc3+V2OGmScMzYrj1c9EnP5BWKy62zFQzzdlvILHN2qLfZceadrKkDE4X0jeXmbTWp0zM5oR5wc7/j7RC0BlXl9Feq6hcCavDxZBF+IGj/7WC0ybQt5gjdzRmGW6hdttHKk4bDTBj0qy/1",
+    "domain": ".novasafra.com.br",
+    "path": "/",
+    "expires": 1777478437.281809,
+    "httpOnly": true,
+    "secure": false,
+    "sameSite": "Lax"
+  },
+  {
+    "name": "_gid",
+    "value": "GA1.3.1854855225.1777471239",
+    "domain": ".novasafra.com.br",
+    "path": "/",
+    "expires": 1777557680,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "Lax"
+  },
+  {
+    "name": "_gat_UA-30162831-1",
+    "value": "1",
+    "domain": ".novasafra.com.br",
+    "path": "/",
+    "expires": 1777471298,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "Lax"
+  },
+  {
+    "name": "_fbp",
+    "value": "fb.2.1777471238836.926965975557156015",
+    "domain": ".novasafra.com.br",
+    "path": "/",
+    "expires": 1785247280,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "Lax"
+  },
+  {
+    "name": "visitroute",
+    "value": "b97d6fcc5ca20d2b413210c5b0777a3f|0b2389f07875e78594003b7c189722cd",
+    "domain": "visit-prod-us.occa.ocs.oraclecloud.com",
+    "path": "/",
+    "expires": -1,
+    "httpOnly": true,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "xda7586707c1PRD_nova_safra",
+    "value": "13A9IHykY0SbnEobNHlEnwAC48pe4-1ZWm2q9vITaOYUfvM44D4%3A1777471238978%3A1777471238978%3A1777471238978%3A1%3A1",
+    "domain": ".novasafra.com.br",
+    "path": "/",
+    "expires": 1812031280.176192,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "Lax"
+  },
+  {
+    "name": "xva7586707c1PRD_nova_safra",
+    "value": "409682cb%3A19dd9662855%3A-ea-4094313224",
+    "domain": ".novasafra.com.br",
+    "path": "/",
+    "expires": 1777472900,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "Lax"
+  },
+  {
+    "name": "fb_cookieconsent_status",
+    "value": "dismiss",
+    "domain": "www.novasafra.com.br",
+    "path": "/",
+    "expires": 1780063241,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "Lax"
+  },
+  {
+    "name": "cookieconsent_status",
+    "value": "dismiss",
+    "domain": "www.novasafra.com.br",
+    "path": "/",
+    "expires": 1809007241,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "Lax"
+  },
+  {
+    "name": "IDE",
+    "value": "AHWqTUn40O9bluSX_2c0PE1NjJIx531oKNFk764gP0fFmCgc5N7anDyNJFo3b724",
+    "domain": ".doubleclick.net",
+    "path": "/",
+    "expires": 1812031249.678331,
+    "httpOnly": true,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "_gcl_au",
+    "value": "1.1.553543547.1777471239.527584417.1777471250.1777471276",
+    "domain": ".novasafra.com.br",
+    "path": "/",
+    "expires": 1785247239,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "Lax"
+  },
+  {
+    "name": "SOFT_LOGIN",
+    "value": "eyJraWQiOiJTb2Z0TG9naW5LZXkiLCJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyMzYyMDcyMjEiLCJpc3MiOiJzdG9yZWZyb250VUkiLCJleHAiOjE4MTE1OTkyODU0NzgsImlhdCI6MTc3NzQ3MTI4NTQ3OH0._dAchGvrMqURqRzg5R5SJ2VgB0UK8bgKxgNmENAgD50",
+    "domain": "www.novasafra.com.br",
+    "path": "/",
+    "expires": 1811599278.047009,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "Lax"
+  },
+  {
+    "name": "oauth_token_secret-storefrontUI",
+    "value": "%22eyJhbGciOiJSUzI1NiIsImprdSI6ImE3NTg2NzA3YzFQUkQiLCJraWQiOiIxIiwieDVjIjpudWxsLCJ4NXUiOiJodHRwczovL3d3dy5kZWxseXMuY29tLmJyL2Njc3RvcmUvdjEvdGVuYW50Q2VydENoYWluIn0.eyJpYXQiOjE3Nzc0NzEyODYsImV4cCI6MTc3NzQ3MjIxNiwic3ViIjoiMjM2MjA3MjIxIiwiYXVkIjoic3RvcmVmcm9udFVJIiwiY29tLm9yYWNsZS5hdGcuY2xvdWQuY29tbWVyY2Uucm9sZXMiOm51bGwsIm9jY3MuYWRtaW4ucm9sZXMiOm51bGwsImlzcyI6Imh0dHBzOi8vd3d3LmRlbGx5cy5jb20uYnIvIiwib2Njcy5hZG1pbi5sb2NhbGUiOm51bGwsIm9jY3MuYWRtaW4udHoiOm51bGwsIm9jY3MuYWRtaW4udGVuYW50VHoiOiJBbWVyaWNhL1Nhb19QYXVsbyIsIm9jY3MuYWRtaW4ua2VlcEFsaXZlVVJMIjoiaHR0cHM6Ly93d3cuZGVsbHlzLmNvbS5ici8iLCJvY2NzLmFkbWluLnRva2VuUmVmcmVzaFVSTCI6Imh0dHBzOi8vd3d3LmRlbGx5cy5jb20uYnIvY2NzdG9yZS92MS9zc29Ub2tlbnMvcmVmcmVzaCIsIm9jY3MuYWRtaW4udmVyc2lvbiI6IjI2LjAxIiwib2Njcy5hZG1pbi5idWlsZCI6ImplbmtpbnMtQXNzZW1ibGVfQ2xvdWRfQ29tbWVyY2VfRUFSc18tbWFzdGVyLTM5NyIsIm9jY3MuYWRtaW4uZW1haWwiOm51bGwsIm9jY3MuYWRtaW4ucHJvZmlsZUlkIjoiMjM2MjA3MjIxIiwib2Njcy5hZ2VudC5vYm8iOm51bGwsIm9jY3MuYWRtaW4uZmlyc3ROYW1lIjpudWxsLCJvY2NzLmFkbWluLmxhc3ROYW1lIjpudWxsLCJvY2NzLmFkbWluLnB1bmNob3V0VXNlciI6ZmFsc2UsInN1Yl90eXBlIjpudWxsLCJzY29wZSI6bnVsbH0.aH-aQPZeIAhP3uPNt6RWnmJMMF3Iq99uULP_3A0jacs6gEjjwz5gYonxdUqoQ9EbxZ-i3zitwUHQd01L-4IpHAuSuhFrayWQ-iEbR-z7O9FgHDCg06un38yza6jlB-8Eto_PIGYjFwOLkHVhp-kL4jB0pgzftJtSpVSKbvFcyY_UsH-3LpNewEJZkq_rmY7sTvnkPUqxo4XDzOybxdLRlYoMP-8xBIWr0UN9R1XYqn_6loOn2yYWj76UxuNyGRrTa1yXILGWyFjjzl5ft01AkYEn6YGOvWHiD6nu0egTsJu3BqRNNhdmM5twxEHc1BemMOI36UtCuAl_PYFk5-Db-g%22",
+    "domain": "www.novasafra.com.br",
+    "path": "/",
+    "expires": -1,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "Lax"
+  },
+  {
+    "name": "flavor",
+    "value": "choco",
+    "domain": "www.novasafra.com.br",
+    "path": "/",
+    "expires": -1,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "_ga",
+    "value": "GA1.3.2067152053.1777471239",
+    "domain": ".novasafra.com.br",
+    "path": "/",
+    "expires": 1812031280.083172,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "Lax"
+  },
+  {
+    "name": "bm_sv",
+    "value": "2155522A012538385F88D5CF1312BD12~YAAQJfo/F351pNadAQAAYXWL2R/yOZLLdtyGJ/E69i+n+cvXdbRHpzTB0UgNU1hEQiP6WHM4k25dddYK/6FJvJ/W5ogN4NgXgp/psYrxHskJFuMi2s2Koh774k6fPExio2Jc+oZBkM5mr8Ed8QZTuYbc2XFxCoZRW9PKS28P5RT9qFiL+wIe5udU5HeiPTUFvqPRhC8A+VTF+qbuDTXZCSC75jnyuNmhVgCpCWn43cf1iGztKxtZ6wG6d3xIIGClnqAkXwGduA==~1",
+    "domain": ".novasafra.com.br",
+    "path": "/",
+    "expires": 1777478438.17896,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "Lax"
+  },
+  {
+    "name": "_ga_HQ4FZ67JZG",
+    "value": "GS2.1.s1777471238$o1$g1$t1777471281$j17$l0$h2124348699",
+    "domain": ".novasafra.com.br",
+    "path": "/",
+    "expires": 1812031281.596283,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "Lax"
+  }
+]

@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:www.lojasantoantonio.com.br)",
+      "WebFetch(domain:www.mariachocolate.com.br)",
+      "WebFetch(domain:www.novasafra.com.br)",
+      "WebFetch(domain:1001festas.com.br)",
+      "PowerShell(Get-Process *)",
+      "Bash(python -c ' *)",
+      "Bash(Get-Content \"C:\\\\Users\\\\gg100\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-gg100-OneDrive-Documents-1001-Festas-An-lises-Compara--o-pre-os\\\\73b3abbe-6ad3-45fc-81d6-92c5a576ee6f\\\\tasks\\\\by7bvvgv3.output\" -Wait)",
+      "Bash(Select-String -Pattern \".\")"
+    ]
+  }
+}
