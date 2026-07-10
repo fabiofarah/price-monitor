@@ -39,7 +39,7 @@ def run(lojas: set[str] | None = None, sku: int | None = None):
         if not produtos:
             _log(f"SKU {sku} não encontrado no banco.")
             return
-        _log(f"Atualizando apenas SKU {sku}: {produtos[0].get('descricao', '')}.")
+        _log(f"Atualizando apenas SKU {sku}: {produtos[0]['descricao']}.")
     else:
         _log(f"{len(produtos)} produtos carregados.")
 
