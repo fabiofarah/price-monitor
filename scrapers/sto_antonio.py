@@ -8,6 +8,7 @@ Estratégia de busca de preço (em ordem):
   2. VTEX Intelligent Search por EAN — para produtos indexados por EAN.
   3. VTEX Intelligent Search por slug — último recurso.
 """
+import re
 import requests
 from .base import ScrapeResult, HEADERS_PADRAO
 
@@ -68,33 +69,44 @@ def _preco_do_item(produto: dict) -> tuple[float | None, bool]:
 
 def _get_preco_catalog(url: str) -> ScrapeResult:
     """
-    Busca produto via VTEX Catalog API pelo linkText exato da URL.
-    Mais confiável que a Intelligent Search para produtos com URLs conhecidas.
+    Busca produto via VTEX Catalog API pelo linkText da URL.
+    Tenta primeiro com o linkText normalizado (dashes simples),
+    depois com o linkText original caso não encontre.
     """
-    link_text = _link_text_da_url(url)
-    try:
-        resp = _session.get(
-            f"{BASE}/api/catalog_system/pub/products/search/",
-            params={"fq": f"linkText:{link_text}"},
-            timeout=15,
-        )
-        resp.raise_for_status()
-        produtos = resp.json()
+    link_text_original = _link_text_da_url(url)
+    # VTEX armazena linkText com dashes simples; URLs podem ter múltiplos dashes
+    link_text_normalizado = re.sub(r"-+", "-", link_text_original)
 
-        if not produtos:
-            return ScrapeResult(preco=None, disponivel=False, url=url, erro="não encontrado")
+    candidatos = [link_text_normalizado]
+    if link_text_original != link_text_normalizado:
+        candidatos.append(link_text_original)
 
-        preco, disponivel = _preco_do_item_catalog(produtos[0])
-        if preco is None:
-            return ScrapeResult(preco=None, disponivel=disponivel, url=url,
-                                erro="preço zero ou ausente na Catalog API")
-        return ScrapeResult(preco=preco, disponivel=disponivel, url=url)
+    for link_text in candidatos:
+        try:
+            resp = _session.get(
+                f"{BASE}/api/catalog_system/pub/products/search/",
+                params={"fq": f"linkText:{link_text}"},
+                timeout=15,
+            )
+            resp.raise_for_status()
+            produtos = resp.json()
 
-    except requests.HTTPError as e:
-        return ScrapeResult(preco=None, disponivel=False, url=url,
-                            erro=f"HTTP {e.response.status_code}")
-    except Exception as e:
-        return ScrapeResult(preco=None, disponivel=False, url=url, erro=str(e))
+            if not produtos:
+                continue
+
+            preco, disponivel = _preco_do_item_catalog(produtos[0])
+            if preco is None:
+                return ScrapeResult(preco=None, disponivel=disponivel, url=url,
+                                    erro="preço zero ou ausente na Catalog API")
+            return ScrapeResult(preco=preco, disponivel=disponivel, url=url)
+
+        except requests.HTTPError as e:
+            return ScrapeResult(preco=None, disponivel=False, url=url,
+                                erro=f"HTTP {e.response.status_code}")
+        except Exception as e:
+            return ScrapeResult(preco=None, disponivel=False, url=url, erro=str(e))
+
+    return ScrapeResult(preco=None, disponivel=False, url=url, erro="não encontrado")
 
 
 def get_preco(url: str, ean: str | None = None) -> ScrapeResult:
