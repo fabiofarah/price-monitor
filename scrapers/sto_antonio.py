@@ -140,7 +140,7 @@ def _get_preco_search(url: str, query: str, ean_esperado: str | None = None) -> 
     try:
         resp = _session.get(
             f"{BASE}/_v/api/intelligent-search/product_search/",
-            params={"query": query, "count": 5},
+            params={"query": query, "count": 5, "hideUnavailableItems": "false"},
             timeout=15,
         )
         resp.raise_for_status()
