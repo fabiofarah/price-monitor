@@ -113,7 +113,7 @@ else:
 
 st.sidebar.divider()
 
-pagina = st.sidebar.radio("", ["Consulta de Preços", "Cadastrar Produto"])
+pagina = st.sidebar.radio("", ["Consulta de Preços", "Cadastrar Produto", "Histórico de Atualizações"])
 
 # ---------------------------------------------------------------------------
 # Página: Consulta de Preços
@@ -228,7 +228,7 @@ if pagina == "Consulta de Preços":
 # Página: Cadastrar Produto
 # ---------------------------------------------------------------------------
 
-else:
+elif pagina == "Cadastrar Produto":
     st.title("Cadastrar / Editar Produto")
 
     # Busca para pré-carregar produto existente
@@ -323,3 +323,75 @@ else:
         "url_maria": "Maria Chocolate", "url_santo": "Sto. Antônio",
     })
     st.dataframe(df_todos, hide_index=True, use_container_width=True)
+
+
+# ---------------------------------------------------------------------------
+# Página: Histórico de Atualizações
+# ---------------------------------------------------------------------------
+
+else:
+    st.title("Histórico de Atualizações")
+    st.caption("Registro de melhorias e correções do Monitor de Preços · 1001 Festas")
+
+    st.divider()
+
+    st.subheader("11 de julho de 2026")
+
+    with st.container(border=True):
+        st.markdown("🎯 **Nova funcionalidade · Sto. Antônio — preço do Clube da Meire**")
+        st.markdown(
+            "O sistema passou a capturar o preço do **Clube da Meire** na Loja Santo Antônio, "
+            "quando disponível. Antes, só era registrado o preço normal (à vista). Agora o painel "
+            "mostra o preço com o desconto do clube para quem tem o cartão Meire."
+        )
+        st.warning(
+            "⚠️ **Atenção:** os registros anteriores a esta data refletem o preço normal (sem desconto "
+            "do clube). A partir de hoje, o preço coletado da Sto. Antônio pode ser menor do que os "
+            "registros anteriores — isso é esperado e correto.",
+            icon=None,
+        )
+
+    with st.container(border=True):
+        st.markdown("🔍 **Correção · Sto. Antônio — produtos com nomes internos diferentes**")
+        st.markdown(
+            "Alguns produtos usam nomes internos diferentes do nome exibido no site "
+            "(ex.: \"gold\" em vez de \"Nobre\"). O sistema agora faz uma busca extra pela descrição "
+            "do produto quando não o encontra pelo link da URL, resolvendo casos como o SKU 402453 "
+            "(Chocolate Branco Nobre Sicao 2,05kg)."
+        )
+
+    with st.container(border=True):
+        st.markdown("📦 **Correção · Sto. Antônio — produtos sem estoque agora são encontrados**")
+        st.markdown(
+            "A API da Sto. Antônio ocultava produtos temporariamente sem estoque nas buscas. "
+            "O sistema agora força a exibição de todos os produtos (disponíveis ou não), "
+            "evitando registros em branco para itens que existem mas estão indisponíveis."
+        )
+
+    st.divider()
+
+    st.subheader("10 de julho de 2026")
+
+    with st.container(border=True):
+        st.markdown("🖱️ **Nova funcionalidade · Painel — botão de atualização por produto**")
+        st.markdown(
+            "Adicionado botão \"Atualizar preço deste produto\" na página de consulta. "
+            "Agora é possível atualizar o preço de um único produto sem precisar rodar "
+            "a coleta completa de todos os ~180 itens."
+        )
+
+    with st.container(border=True):
+        st.markdown("🔗 **Correção · 1001 Festas — atualização das URLs dos produtos**")
+        st.markdown(
+            "As URLs da 1001 Festas mudaram de formato. Os links foram atualizados no banco "
+            "para o novo padrão, e o sistema agora corrige automaticamente os links antigos "
+            "antes de cada consulta."
+        )
+
+    with st.container(border=True):
+        st.markdown("🚀 **Lançamento · Monitor de Preços entra em operação**")
+        st.markdown(
+            "Sistema de monitoramento de preços colocado em operação. Coleta automática "
+            "diária para três concorrentes: 1001 Festas, Maria Chocolate e Loja Santo Antônio. "
+            "Painel web com gráfico histórico e tabela de últimos preços por produto."
+        )
