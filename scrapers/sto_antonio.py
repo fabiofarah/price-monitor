@@ -109,13 +109,15 @@ def _get_preco_catalog(url: str) -> ScrapeResult:
     return ScrapeResult(preco=None, disponivel=False, url=url, erro="não encontrado")
 
 
-def get_preco(url: str, ean: str | None = None) -> ScrapeResult:
+def get_preco(url: str, ean: str | None = None, descricao: str | None = None) -> ScrapeResult:
     """
     Obtém o preço da Loja Santo Antônio.
 
-    1. Tenta Catalog API pelo linkText da URL (mais direto e confiável).
-    2. Fallback: Intelligent Search por EAN.
-    3. Fallback: Intelligent Search por slug da URL.
+    1. Catalog API pelo linkText da URL.
+    2. Intelligent Search por EAN.
+    3. Intelligent Search por slug da URL.
+    4. Intelligent Search pela descrição do produto (fallback quando o slug
+       usa termos internos que não batem com o nome real, ex: "gold" vs "Nobre").
     """
     url = url.strip()
 
@@ -130,9 +132,17 @@ def get_preco(url: str, ean: str | None = None) -> ScrapeResult:
         if resultado.erro is None:
             return resultado
 
-    # Passo 3: Intelligent Search por slug
+    # Passo 3: Intelligent Search por slug da URL
     slug = _slug_da_url(url)
-    return _get_preco_search(url, slug, ean_esperado=None)
+    resultado = _get_preco_search(url, slug, ean_esperado=None)
+    if resultado.erro is None:
+        return resultado
+
+    # Passo 4: Intelligent Search pela descrição do produto
+    if descricao:
+        resultado = _get_preco_search(url, descricao, ean_esperado=None)
+
+    return resultado
 
 
 def _get_preco_search(url: str, query: str, ean_esperado: str | None = None) -> ScrapeResult:

@@ -96,7 +96,7 @@ def run(lojas: set[str] | None = None, sku: int | None = None):
             if not url:
                 sem_link += 1
                 continue
-            result = sto_antonio.get_preco(url, ean=p["ean"])
+            result = sto_antonio.get_preco(url, ean=p["ean"], descricao=p["descricao"])
             registrar_preco(p["id"], "sto_antonio", url, result.preco, result.disponivel, result.erro)
             if result.erro:
                 _log(f"  [erro] SKU {p['sku']} — {result.erro}")
