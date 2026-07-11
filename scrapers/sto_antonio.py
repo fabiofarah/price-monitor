@@ -1,17 +1,25 @@
 """
 Scraper para www.lojasantoantonio.com.br (plataforma VTEX).
-Usa a API REST do VTEX — sem scraping de HTML.
 
-Endpoints usados:
-  - Preço por slug:  /api/catalog_system/pub/products/search/{slug}
-  - Busca por query: /_v/api/intelligent-search/product_search/?query={q}&count={n}
+Preço do Clube da Meire: extraído do HTML da página do produto via elemento CSS
+  'lojasantoantonio-shelf-custom-0-x-product-promotion--price-meire-selling--product'
+
+Disponibilidade e preço de fallback: via VTEX Intelligent Search API
+  /_v/api/intelligent-search/product_search/?query={q}&count={n}
 """
+import re
 import requests
+from bs4 import BeautifulSoup
 from .base import ScrapeResult, HEADERS_PADRAO
 
 BASE = "https://www.lojasantoantonio.com.br"
+
 _session = requests.Session()
-_session.headers.update({**HEADERS_PADRAO, "Accept": "application/json"})
+_session.headers.update({**HEADERS_PADRAO, "Accept": "text/html,application/json"})
+
+_CLASSE_MEIRE = (
+    "lojasantoantonio-shelf-custom-0-x-product-promotion--price-meire-selling--product"
+)
 
 
 def _slug_da_url(url: str) -> str:
@@ -28,41 +36,75 @@ def _slug_da_url(url: str) -> str:
     return " ".join(palavras[:6])
 
 
-def _preco_do_item(produto: dict) -> tuple[float | None, bool]:
-    """Extrai preço e disponibilidade do dict de produto VTEX.
-
-    Usa spotPrice (preço do Clube da Meire) quando disponível,
-    com fallback para Price (preço normal sem clube).
+def _preco_meire_do_html(url: str) -> float | None:
+    """
+    Busca o preço do Clube da Meire diretamente no HTML da página do produto.
+    Retorna None se o elemento não existir ou o produto não tiver preço clube.
     """
     try:
+        resp = _session.get(url, timeout=20)
+        resp.raise_for_status()
+        soup = BeautifulSoup(resp.text, "html.parser")
+
+        el = soup.find(class_=_CLASSE_MEIRE)
+        if el is None:
+            return None
+
+        texto = el.get_text(strip=True)
+        # Formato BR: "R$ 12,90" ou "R$1.290,50"
+        # Remove tudo exceto dígitos e vírgula, depois converte
+        nums = re.sub(r"[^\d,]", "", texto)
+        if not nums:
+            return None
+        return float(nums.replace(",", "."))
+
+    except Exception:
+        return None
+
+
+def _preco_do_item(produto: dict) -> tuple[float | None, bool]:
+    """Extrai preço regular e disponibilidade do dict de produto VTEX (API)."""
+    try:
         oferta = produto["items"][0]["sellers"][0]["commertialOffer"]
-        spot  = oferta.get("spotPrice")
         price = oferta.get("Price", 0)
-        preco = float(spot if spot and float(spot) > 0 else price)
+        preco = float(price) if price else None
         disponivel = int(oferta.get("AvailableQuantity", 0)) > 0
-        return preco if preco > 0 else None, disponivel
+        return preco if preco else None, disponivel
     except (KeyError, IndexError, TypeError, ValueError):
         return None, False
 
 
 def get_preco(url: str, ean: str | None = None) -> ScrapeResult:
     """
-    Obtém o preço via VTEX Intelligent Search.
-    1ª tentativa: busca por EAN (match exato).
-    Fallback: busca pelo slug da URL (cobre EANs Callebaut/Sicao não indexados por EAN).
+    Obtém o preço da Loja Santo Antônio.
+
+    1. Tenta extrair o preço do Clube da Meire via HTML da página do produto.
+    2. Consulta a API para disponibilidade (e preço de fallback se não houver clube).
     """
     url = url.strip()
 
-    if ean:
-        resultado = _get_preco_search(url, ean, ean_esperado=ean)
-        if resultado.erro != "não encontrado":
-            return resultado
-        # EAN não encontrado — tenta pelo slug
-        slug = _slug_da_url(url)
-        return _get_preco_search(url, slug, ean_esperado=None)
+    # Passo 1: preço Clube da Meire via HTML
+    preco_meire = _preco_meire_do_html(url)
 
-    slug = _slug_da_url(url)
-    return _get_preco_search(url, slug, ean_esperado=None)
+    # Passo 2: disponibilidade (e preço regular) via API
+    if ean:
+        resultado_api = _get_preco_search(url, ean, ean_esperado=ean)
+        if resultado_api.erro == "não encontrado":
+            slug = _slug_da_url(url)
+            resultado_api = _get_preco_search(url, slug, ean_esperado=None)
+    else:
+        slug = _slug_da_url(url)
+        resultado_api = _get_preco_search(url, slug, ean_esperado=None)
+
+    # Passo 3: retorna preço Meire se disponível, senão usa preço da API
+    if preco_meire is not None:
+        return ScrapeResult(
+            preco=preco_meire,
+            disponivel=resultado_api.disponivel,
+            url=url,
+        )
+
+    return resultado_api
 
 
 def _get_preco_search(url: str, query: str, ean_esperado: str | None = None) -> ScrapeResult:
@@ -72,6 +114,7 @@ def _get_preco_search(url: str, query: str, ean_esperado: str | None = None) -> 
             f"{BASE}/_v/api/intelligent-search/product_search/",
             params={"query": query, "count": 5},
             timeout=15,
+            headers={"Accept": "application/json"},
         )
         resp.raise_for_status()
         data = resp.json()
@@ -80,7 +123,6 @@ def _get_preco_search(url: str, query: str, ean_esperado: str | None = None) -> 
         if not produtos:
             return ScrapeResult(preco=None, disponivel=False, url=url, erro="não encontrado")
 
-        # Se temos EAN, procura o produto que bate exatamente
         produto_alvo = None
         if ean_esperado:
             for prod in produtos:
@@ -122,6 +164,7 @@ def buscar_por_ean(ean: str) -> list[dict]:
             f"{BASE}/_v/api/intelligent-search/product_search/",
             params={"query": ean, "count": 5},
             timeout=15,
+            headers={"Accept": "application/json"},
         )
         resp.raise_for_status()
         data = resp.json()
