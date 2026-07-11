@@ -105,6 +105,7 @@ def run(lojas: set[str] | None = None, sku: int | None = None):
                 ok += 1
             time.sleep(0.5)
         _log(f"  Concluído: {ok} ok, {erro} com erro, {sem_link} sem link.")
+        sto_antonio.fechar_browser()
 
     _log("=== Coleta finalizada ===")
 
