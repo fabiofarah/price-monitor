@@ -24,7 +24,7 @@ import gspread
 # Configuração
 # ---------------------------------------------------------------------------
 
-CREDENTIALS  = Path(__file__).parent / "monitor-precos-1001-1fe60bf0df5e.json"
+CREDENTIALS  = Path(__file__).parent / "monitor-precos-1001.json"
 SHEET_ID     = "1RW6kCGUGY2cvQltFux7IcnGS26erxrdI1BLLR0JeX_k"
 
 DB_PATH      = Path(__file__).parent / "precos.db"
