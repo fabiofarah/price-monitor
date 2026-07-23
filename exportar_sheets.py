@@ -15,7 +15,7 @@ Cron (ex: toda segunda às 7h):
 """
 
 import sqlite3
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
 import gspread
@@ -40,21 +40,42 @@ LOJAS = [
 # Banco de dados
 # ---------------------------------------------------------------------------
 
-def _buscar_datas_coleta(n: int = 4) -> list[str]:
-    """Retorna as últimas n datas distintas de coleta (formato YYYY-MM-DD), em ordem cronológica."""
+def _buscar_datas_coleta() -> list[str]:
+    """
+    Retorna 4 datas de coleta: hoje, hoje-7, hoje-14 e hoje-21 dias.
+    Se não houver coleta exata nessa data, usa a data disponível mais próxima.
+    Retorna em ordem cronológica, sem duplicatas.
+    """
     con = sqlite3.connect(DB_PATH)
     rows = con.execute(
         """
         SELECT DISTINCT date(capturado_em) as data
         FROM historico_precos
         WHERE preco IS NOT NULL AND erro IS NULL
-        ORDER BY data DESC
-        LIMIT ?
+        ORDER BY data
         """,
-        (n,),
     ).fetchall()
     con.close()
-    return [row[0] for row in reversed(rows)]
+
+    datas_disponiveis = [row[0] for row in rows]
+    if not datas_disponiveis:
+        return []
+
+    hoje = date.today()
+    alvos = [hoje - timedelta(weeks=i) for i in range(3, -1, -1)]  # [hoje-21, hoje-14, hoje-7, hoje]
+
+    resultado = []
+    vistas: set = set()
+    for alvo in alvos:
+        mais_proxima = min(
+            datas_disponiveis,
+            key=lambda d: abs((datetime.strptime(d, "%Y-%m-%d").date() - alvo).days),
+        )
+        if mais_proxima not in vistas:
+            vistas.add(mais_proxima)
+            resultado.append(mais_proxima)
+
+    return resultado
 
 
 def _buscar_precos_na_data(data: str) -> dict:
@@ -142,7 +163,7 @@ def exportar():
     if not cabecalho_existe:
         print("Planilha vazia — criando estrutura com as últimas 4 semanas...")
         produtos = _buscar_produtos_e_precos()
-        datas = _buscar_datas_coleta(4)
+        datas = _buscar_datas_coleta()
 
         # Cabeçalho: SKU, Descrição + 3 colunas por data
         cabecalho = ["SKU", "Descrição"]
