@@ -15,7 +15,7 @@ Cron (ex: toda segunda às 7h):
 """
 
 import sqlite3
-from datetime import date
+from datetime import date, datetime
 from pathlib import Path
 
 import gspread
@@ -40,10 +40,48 @@ LOJAS = [
 # Banco de dados
 # ---------------------------------------------------------------------------
 
+def _buscar_datas_coleta(n: int = 4) -> list[str]:
+    """Retorna as últimas n datas distintas de coleta (formato YYYY-MM-DD), em ordem cronológica."""
+    con = sqlite3.connect(DB_PATH)
+    rows = con.execute(
+        """
+        SELECT DISTINCT date(capturado_em) as data
+        FROM historico_precos
+        WHERE preco IS NOT NULL AND erro IS NULL
+        ORDER BY data DESC
+        LIMIT ?
+        """,
+        (n,),
+    ).fetchall()
+    con.close()
+    return [row[0] for row in reversed(rows)]
+
+
+def _buscar_precos_na_data(data: str) -> dict:
+    """Retorna {produto_id: {loja: preco}} com o preço mais recente do dia informado."""
+    con = sqlite3.connect(DB_PATH)
+    rows = con.execute(
+        """
+        SELECT produto_id, loja, preco
+        FROM historico_precos
+        WHERE date(capturado_em) = ? AND preco IS NOT NULL AND erro IS NULL
+        ORDER BY capturado_em DESC
+        """,
+        (data,),
+    ).fetchall()
+    con.close()
+
+    resultado: dict = {}
+    for produto_id, loja, preco in rows:
+        if produto_id not in resultado:
+            resultado[produto_id] = {}
+        if loja not in resultado[produto_id]:  # pega só o mais recente do dia
+            resultado[produto_id][loja] = float(preco)
+    return resultado
+
+
 def _buscar_produtos_e_precos() -> list[dict]:
-    """
-    Retorna lista de produtos com o último preço registrado por loja.
-    """
+    """Retorna lista de produtos com o último preço registrado por loja."""
     con = sqlite3.connect(DB_PATH)
     con.row_factory = sqlite3.Row
 
@@ -53,7 +91,7 @@ def _buscar_produtos_e_precos() -> list[dict]:
 
     resultado = []
     for p in produtos:
-        item = {"sku": p["sku"], "descricao": p["descricao"], "precos": {}}
+        item = {"id": p["id"], "sku": p["sku"], "descricao": p["descricao"], "precos": {}}
         for loja_key, _ in LOJAS:
             row = con.execute(
                 """
@@ -77,8 +115,8 @@ def _buscar_produtos_e_precos() -> list[dict]:
 
 def _formatar_preco(preco: float | None) -> str:
     if preco is None:
-        return "—"
-    return f"R$ {preco:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+        return ""
+    return round(preco, 2)
 
 
 def exportar():
@@ -102,22 +140,32 @@ def exportar():
     )
 
     if not cabecalho_existe:
-        print("Planilha vazia — criando estrutura inicial...")
+        print("Planilha vazia — criando estrutura com as últimas 4 semanas...")
         produtos = _buscar_produtos_e_precos()
+        datas = _buscar_datas_coleta(4)
 
+        # Cabeçalho: SKU, Descrição + 3 colunas por data
         cabecalho = ["SKU", "Descrição"]
-        for _, sigla in LOJAS:
-            cabecalho.append(f"{sigla} {hoje}")
+        for data in datas:
+            dd_mm = datetime.strptime(data, "%Y-%m-%d").strftime("%d/%m")
+            for _, sigla in LOJAS:
+                cabecalho.append(f"{sigla} {dd_mm}")
+
+        # Preços por data
+        precos_por_data = {data: _buscar_precos_na_data(data) for data in datas}
 
         linhas = [cabecalho]
         for p in produtos:
             linha = [str(p["sku"]), p["descricao"]]
-            for loja_key, _ in LOJAS:
-                linha.append(_formatar_preco(p["precos"][loja_key]))
+            for data in datas:
+                precos_data = precos_por_data[data]
+                for loja_key, _ in LOJAS:
+                    preco = precos_data.get(p["id"], {}).get(loja_key)
+                    linha.append(_formatar_preco(preco))
             linhas.append(linha)
 
         ws.update(range_name="A1", values=linhas)
-        print(f"Planilha criada com {len(produtos)} produtos.")
+        print(f"Planilha criada com {len(produtos)} produtos e {len(datas)} semanas.")
         return
 
     # -----------------------------------------------------------------------
