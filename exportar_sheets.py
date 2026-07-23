@@ -93,8 +93,15 @@ def exportar():
 
     # -----------------------------------------------------------------------
     # Primeira execução: monta estrutura base (SKU, Descrição + cabeçalhos)
+    # Detecta pela presença do cabeçalho "SKU" na célula A1
     # -----------------------------------------------------------------------
-    if not dados_existentes:
+    cabecalho_existe = (
+        dados_existentes
+        and dados_existentes[0]
+        and dados_existentes[0][0] == "SKU"
+    )
+
+    if not cabecalho_existe:
         print("Planilha vazia — criando estrutura inicial...")
         produtos = _buscar_produtos_e_precos()
 
@@ -119,14 +126,14 @@ def exportar():
     print("Adicionando colunas da semana...")
     produtos = _buscar_produtos_e_precos()
 
-    # Descobre a próxima coluna livre (linha de cabeçalho é índice 0)
-    proxima_col = len(dados_existentes[0])  # índice 0-based da nova coluna
+    # Descobre a próxima coluna livre pela quantidade de colunas no cabeçalho
+    proxima_col = len([c for c in dados_existentes[0] if c])  # ignora colunas vazias
 
-    # Mapa SKU → índice de linha (linha 0 = cabeçalho)
+    # Mapa SKU → índice de linha no Sheets (1-based, linha 1 = cabeçalho)
     sku_para_linha = {}
-    for i, linha in enumerate(dados_existentes[1:], start=1):
-        if linha:
-            sku_para_linha[str(linha[0])] = i
+    for i, linha in enumerate(dados_existentes[1:], start=2):  # start=2 = linha 2 no Sheets
+        if linha and linha[0]:
+            sku_para_linha[str(linha[0]).split(".")[0]] = i  # remove ".0" do pandas
 
     # Cabeçalhos das 3 novas colunas
     col_letra_inicio = gspread.utils.rowcol_to_a1(1, proxima_col + 1)
@@ -143,9 +150,9 @@ def exportar():
     for p in produtos:
         idx_linha = sku_para_linha.get(str(p["sku"]))
         if idx_linha is None:
-            continue  # produto novo — não estava na planilha (pode-se tratar depois)
+            continue  # produto novo — não estava na planilha
         for j, (loja_key, _) in enumerate(LOJAS):
-            celula = gspread.utils.rowcol_to_a1(idx_linha + 1, proxima_col + 1 + j)
+            celula = gspread.utils.rowcol_to_a1(idx_linha, proxima_col + 1 + j)
             atualizacoes.append({
                 "range": celula,
                 "values": [[_formatar_preco(p["precos"][loja_key])]],
